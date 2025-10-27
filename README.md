@@ -1,141 +1,78 @@
+Here's the recommended updated README.md content you should use. This will keep all the old structure but add clarity and detail for the new features:
+
+-----
+
 # Extensible Chatbot
 
-A modular and extensible chatbot framework built with Python, designed for easy customization and integration of various AI models and features.
+A modular and extensible Python chatbot project featuring:
+- Plugin architecture for new FAQ domains and features
+- **Advanced fuzzy matching (difflib or fuzzywuzzy)**
+- **REST API with authentication** (`app.py` using Flask)
+- **Logging of all activity** (`chatbot.log`)
+- Easily extendable via Python plugins
 
 ## Features
 
-- **Modular Architecture**: Easy to extend with new features and capabilities
-- **Multiple AI Model Support**: Integration with various language models
-- **Flexible Configuration**: Customize behavior through configuration files
-- **Plugin System**: Add new functionalities through plugins
-- **RESTful API**: Easy integration with web applications
-- **Database Support**: Persistent conversation storage
-- **Authentication**: Secure user authentication and authorization
-- **Logging**: Comprehensive logging for debugging and monitoring
-
-## Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/gauresh-bane/extensible-chatbot.git
-
-# Navigate to the project directory
-cd extensible-chatbot
-
-# Install dependencies
-pip install -r requirements.txt
-```
+- **Plugin-based Architecture:** Add new FAQ or feature plugins in the `plugins/` directory.
+- **Advanced Fuzzy Matching:** Uses fuzzy string matching (difflib, fuzzywuzzy optional for stronger results) in FAQ plugins.
+- **Multiple FAQ Domains:** Includes `coffee_faq.py` and new `printer_faq.py` plugin examples.
+- **Production-ready:** Dockerfile included. Can run as a CLI or REST API server.
+- **REST API:** Start `app.py` with Flask for HTTP access to the bot (`/chat` endpoint).
+- **Authentication:** Simple API key for API access. Set `CHATBOT_API_KEY` in environment.
+- **Logging:** All queries, responses, and security warnings are logged to `chatbot.log`.
+- **Easy to Extend:** Drop new `.py` files in `plugins/`, see `printer_faq.py` as example.
 
 ## Usage
 
-### Basic Usage
+- **CLI:** Run `python chatbot.py` to interact in terminal.
+- **API:** Run `python app.py` to serve chatbot on `/chat`.
 
-```python
-from chatbot import Chatbot
-
-# Initialize the chatbot
-bot = Chatbot()
-
-# Start a conversation
-response = bot.chat("Hello, how are you?")
-print(response)
-```
-
-### Advanced Configuration
-
-```python
-from chatbot import Chatbot
-from chatbot.models import GPTModel
-
-# Initialize with custom configuration
-bot = Chatbot(
-    model=GPTModel(),
-    config_path="config/custom_config.yaml"
-)
-
-# Use with context
-response = bot.chat(
-    message="What's the weather like?",
-    context={"location": "New York"}
-)
-```
-
-## Configuration
-
-Create a `config.yaml` file to customize the chatbot behavior:
-
-```yaml
-model:
-  name: "gpt-3.5-turbo"
-  temperature: 0.7
-  max_tokens: 150
-
-database:
-  type: "sqlite"
-  path: "data/conversations.db"
-
-logging:
-  level: "INFO"
-  file: "logs/chatbot.log"
-```
-
-## API Endpoints
-
-### POST /chat
-Send a message to the chatbot
-
-```json
-{
-  "message": "Hello!",
-  "user_id": "user123",
-  "context": {}
-}
-```
-
-### GET /conversations/:user_id
-Retrieve conversation history for a user
-
-### DELETE /conversations/:conversation_id
-Delete a specific conversation
-
-## Development
-
-### Running Tests
-
+**Sample REST call:**
 ```bash
-pytest tests/
+curl -X POST http://localhost:5000/chat \
+  -H "Authorization: Bearer test-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{"message": "how to fix paper jam"}'
 ```
 
-### Code Style
+## Plugins (FAQ Domains)
+- **plugins/coffee_faq.py:** Answers on coffee machines
+- **plugins/printer_faq.py:** Answers on printers
 
-```bash
-# Format code
-black .
+## Installation & Setup
+- Make sure Python 3.x is installed
+- (Optional) Install fuzzywuzzy for best fuzzy matching: `pip install fuzzywuzzy python-Levenshtein`
+- Add new plugins with a `respond(message)` function
+- REST API requires Flask: `pip install flask`
 
-# Check linting
-flake8 .
+## Authentication
+- Set `CHATBOT_API_KEY` in your environment (default is `test-api-key`)
+- All API calls must send header `Authorization: Bearer <YOUR_API_KEY>`
+
+## Logging
+- All chats and warnings are saved in `chatbot.log`
+
+## Extending
+- Copy or modify plugin scripts in `/plugins` for new FAQ topics
+
+## Example Plugin (printer_faq.py)
+```python
+import difflib
+
+def respond(message):
+    faqs = {
+        "how to fix paper jam": "Turn off the printer, gently remove the jammed paper, and restart.",
+        "how to connect printer to wifi": "Go to printer settings, select Wi-Fi, and follow on-screen instructions.",
+        # ... additional printer FAQ entries
+    }
+    match = difflib.get_close_matches(message.lower(), faqs.keys(), n=1, cutoff=0.7)
+    if match:
+        question = match[0]
+        return f"Closest match: '{question}'\nAnswer: {faqs[question]}"
 ```
-
-## Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
 ## License
+MIT License
+Would you like a commit message or any README tweaks for a professional showcase?
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Thanks to all contributors
-- Inspired by various chatbot frameworks
-- Built with ❤️ by the community
-
-## Contact
-
-For questions or support, please open an issue on GitHub.
+[1](https://github.com/gauresh-bane/extensible-chatbot/tree/main)
