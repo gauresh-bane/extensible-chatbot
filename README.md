@@ -73,6 +73,3 @@ def respond(message):
 
 ## License
 MIT License
-Would you like a commit message or any README tweaks for a professional showcase?
-
-[1](https://github.com/gauresh-bane/extensible-chatbot/tree/main)
